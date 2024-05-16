@@ -35,14 +35,14 @@ public class PostoController {
     }
 
     @PostMapping("/create")
-    @Secured("ROLE_ADMIN")
+    @Secured("ADMIN")
     public ResponseEntity<?> createPosto (@RequestBody PostoRequest postoRequest) {
         postoService.createPosto(postoRequest);
         return new ResponseEntity<>(postoRequest, HttpStatus.OK);
     }
 
     @PutMapping("/update/{id}")
-    @Secured("ROLE_ADMIN")
+    @Secured("ADMIN")
     public ResponseEntity<?> updatePosto (@PathVariable Long id, @RequestBody Posto posto) {
         try {
             return new ResponseEntity<>(postoService.updatePosto(id, posto), HttpStatus.OK);
@@ -53,7 +53,7 @@ public class PostoController {
     }
 
     @DeleteMapping("/delete/{id}")
-    @Secured("ROLE_ADMIN")
+    @Secured("ADMIN")
     public ResponseEntity<String> deletePostoById (@PathVariable Long id) {
         try {
             postoService.deletePostoById(id);

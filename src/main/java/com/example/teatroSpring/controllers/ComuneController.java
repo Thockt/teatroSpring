@@ -30,14 +30,14 @@ public class ComuneController {
     }
 
     @PostMapping("/create")
-    @Secured("ROLE_ADMIN")
+    @Secured("ADMIN")
     public ResponseEntity<?> createComune (@RequestBody Comune comune) {
         comuneService.createComune(comune);
         return new ResponseEntity<>(comune, HttpStatus.OK);
     }
 
     @PutMapping("/update/{id}")
-    @Secured("ROLE_ADMIN")
+    @Secured("ADMIN")
     public ResponseEntity<?> updateComune (@PathVariable Long id, @RequestBody Comune comune) {
         try {
             return new ResponseEntity<>(comuneService.updateComune(id, comune), HttpStatus.OK);
@@ -48,7 +48,7 @@ public class ComuneController {
     }
 
     @DeleteMapping("/delete/{id}")
-    @Secured("ROLE_ADMIN")
+    @Secured("ADMIN")
     public ResponseEntity<String> deleteComuneById (@PathVariable Long id) {
         try {
             comuneService.deleteComuneById(id);

@@ -24,7 +24,7 @@ public class BigliettoController {
     private BigliettoService bigliettoService;
 
     @GetMapping("/get/{id}")
-    @Secured("ROLE_USER")
+    @Secured("USER")
     public ResponseEntity<?> getBigliettoById (@PathVariable Long id) {
         try{
             BigliettoResponse myBiglietto = bigliettoService.getBigliettoById(id);
@@ -35,7 +35,7 @@ public class BigliettoController {
     }
 
     @GetMapping("/all")
-    @Secured("ROLE_ADMIN")
+    @Secured("ADMIN")
     public ResponseEntity<List<BigliettoResponse>> getAllBiglietto () {
         return new ResponseEntity<>(bigliettoService.getAll(), HttpStatus.OK);
     }
@@ -57,7 +57,7 @@ public class BigliettoController {
     }
 
     @DeleteMapping("/delete/{id}")
-    @Secured("ROLE_ADMIN")
+    @Secured("ADMIN")
     public ResponseEntity<String> deleteBigliettoById (@PathVariable Long id) {
         try {
             bigliettoService.deleteBigliettoById(id);

@@ -36,14 +36,14 @@ public class SalaController {
     }
 
     @PostMapping("/create")
-    @Secured("ROLE_ADMIN")
+    @Secured("ADMIN")
     public ResponseEntity<?> createSala (@RequestBody SalaRequest salaRequest) throws SedeNotFoundException {
         salaService.createSala(salaRequest);
         return new ResponseEntity<>(salaRequest, HttpStatus.OK);
     }
 
     @PutMapping("/update/{id}")
-    @Secured("ROLE_ADMIN")
+    @Secured("ADMIN")
     public ResponseEntity<?> updateSala (@PathVariable Long id, @RequestBody Sala sala) {
         try {
             return new ResponseEntity<>(salaService.updateSala(id, sala), HttpStatus.OK);
@@ -54,7 +54,7 @@ public class SalaController {
     }
 
     @DeleteMapping("/delete/{id}")
-    @Secured("ROLE_ADMIN")
+    @Secured("ADMIN")
     public ResponseEntity<String> deleteSalaById (@PathVariable Long id) {
         try {
             salaService.deleteSalaById(id);

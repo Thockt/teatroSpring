@@ -3,17 +3,22 @@ package com.example.teatroSpring.services;
 import com.example.teatroSpring.entities.Comune;
 import com.example.teatroSpring.entities.Genere;
 import com.example.teatroSpring.entities.Spettacolo;
+import com.example.teatroSpring.entities.Utente;
 import com.example.teatroSpring.exceptions.ComuneNotFoundException;
 import com.example.teatroSpring.exceptions.GenereNonEsisteException;
 import com.example.teatroSpring.exceptions.SpettacoloNotFoundException;
 import com.example.teatroSpring.repositories.SpettacoloRepository;
+import com.example.teatroSpring.repositories.UtenteRepository;
 import com.example.teatroSpring.requests.SpettacoloRequest;
 import com.example.teatroSpring.responses.SpettacoloResponse;
 import com.example.teatroSpring.specifications.SpettacoloSpecification;
+import jakarta.mail.internet.InternetAddress;
 import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,11 +31,15 @@ public class SpettacoloService {
     @Autowired
     private SpettacoloRepository spettacoloRepository;
     @Autowired
+    private UtenteRepository utenteRepository;
+    @Autowired
     private GenereService genereService;
     @Autowired
     private SalaService salaService;
     @Autowired
     private ComuneService comuneService;
+    @Autowired
+    private JavaMailSender javaMailSender;
 
     private SpettacoloSpecification spettacoloSpecification = new SpettacoloSpecification();
 
@@ -42,8 +51,14 @@ public class SpettacoloService {
 
     public List<Spettacolo> getAll () { return spettacoloRepository.findAll(); }
 
-    public SpettacoloResponse createSpettacolo (SpettacoloRequest spettacolo) throws GenereNonEsisteException{
+    public SpettacoloResponse createSpettacolo (SpettacoloRequest spettacolo) throws GenereNonEsisteException, ComuneNotFoundException {
         spettacoloRepository.saveAndFlush(convertFromDTO(spettacolo));
+        List<Utente> utenti = utenteRepository.getAllByCittà(comuneService.getComuneById(salaService.getSalaById(spettacolo.getSala()).getSede().getComune().getId()).getId());
+        if (!utenti.isEmpty()) {
+            for(Utente u: utenti) {
+                javaMailSender.send(createNewSpettacoloMail(u, convertFromDTO(spettacolo)));
+            }
+        }
         return convertFromEntity(convertFromDTO(spettacolo));
     }
 
@@ -82,6 +97,15 @@ public class SpettacoloService {
     public List<Spettacolo> getSpettacoliByIntervalloDate (LocalDateTime data1, LocalDateTime data2) {
         /*if (data1.isAfter(data2)) throw new IllegalArgumentException("La prima data non può essere maggiore della seconda!");*/
         return spettacoloRepository.getSpettacoliByIntervalloDate(data1, data2);
+    }
+
+    public SimpleMailMessage createNewSpettacoloMail (Utente u, Spettacolo s) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(u.getEmail());
+        message.setSubject("NUOVO SPETTACOLO");
+        message.setText("Un nuovo spettacolo verrà eseguito nella città da te specificata! \n Titolo: " +s.getNome()+ " in data: " +s.getOrario()+
+                " di genere: " +s.getGenere().getNome()+ " al prezzo di: " +s.getPrezzo()+"!");
+        return message;
     }
 
     private Spettacolo convertFromDTO (SpettacoloRequest spettacoloRequest) throws GenereNonEsisteException{

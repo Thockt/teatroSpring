@@ -3,11 +3,14 @@ package com.example.teatroSpring.security;
 import com.example.teatroSpring.entities.TokenBlackList;
 import com.example.teatroSpring.entities.Utente;
 import com.example.teatroSpring.enums.Role;
+import com.example.teatroSpring.exceptions.ComuneNotFoundException;
 import com.example.teatroSpring.exceptions.UserNotConfirmedException;
+import com.example.teatroSpring.repositories.ComuneRepository;
 import com.example.teatroSpring.repositories.UtenteRepository;
 import com.example.teatroSpring.requests.AuthenticationRequest;
 import com.example.teatroSpring.requests.RegistrationRequest;
 import com.example.teatroSpring.responses.AuthenticationResponse;
+import com.example.teatroSpring.services.ComuneService;
 import com.example.teatroSpring.services.TokenBlackListService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,8 @@ public class AuthenticationService {
     @Autowired
     private UtenteRepository utenteRepository;
     @Autowired
+    private ComuneService comuneService;
+    @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -36,7 +41,7 @@ public class AuthenticationService {
     @Autowired
     private JavaMailSender javaMailSender;
 
-    public AuthenticationResponse register (RegistrationRequest request) {
+    public AuthenticationResponse register (RegistrationRequest request) throws ComuneNotFoundException {
         var user = Utente.builder()
                 .nome(request.getNome())
                 .cognome(request.getCognome())
@@ -44,6 +49,7 @@ public class AuthenticationService {
                 .email(request.getEmail())
                 .telefono(request.getTelefono())
                 .dataNascita(request.getDataNascita())
+                .città(comuneService.getComuneById(request.getCittà()))
                 .role(Role.TOCONFIRM)
                 .password(passwordEncoder.encode(request.getPassword()))
                 .build();

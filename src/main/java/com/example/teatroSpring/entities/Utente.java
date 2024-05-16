@@ -35,6 +35,8 @@ public class Utente implements UserDetails {
     private String telefono;
     @Column(nullable = false)
     private LocalDate dataNascita;
+    @ManyToOne
+    private Comune città;
     @Column (nullable = false)
     private String password;
     @Column (nullable = false)

@@ -40,14 +40,14 @@ public class SpettacoloController {
     }
 
     @PostMapping("/create")
-    @Secured("ROLE_ADMIN")
-    public ResponseEntity<?> createSpettacolo (@RequestBody SpettacoloRequest spettacoloRequest)throws GenereNonEsisteException {
+    @Secured("ADMIN")
+    public ResponseEntity<?> createSpettacolo (@RequestBody SpettacoloRequest spettacoloRequest) throws GenereNonEsisteException, ComuneNotFoundException {
         spettacoloService.createSpettacolo(spettacoloRequest);
         return new ResponseEntity<>(spettacoloRequest, HttpStatus.OK);
     }
 
     @PutMapping("/update/{id}")
-    @Secured("ROLE_ADMIN")
+    @Secured("ADMIN")
     public ResponseEntity<?> updateSpettacolo (@PathVariable Long id, @RequestBody Spettacolo spettacolo) {
         try {
             return new ResponseEntity<>(spettacoloService.updateSpettacolo(id, spettacolo), HttpStatus.OK);
@@ -58,7 +58,7 @@ public class SpettacoloController {
     }
 
     @DeleteMapping("/delete/{id}")
-    @Secured("ROLE_ADMIN")
+    @Secured("ADMIN")
     public ResponseEntity<String> deleteSpettacoloById (@PathVariable Long id) {
         try {
             spettacoloService.deleteSpettacoloById(id);

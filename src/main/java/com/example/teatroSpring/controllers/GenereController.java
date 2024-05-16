@@ -34,14 +34,14 @@ public class GenereController {
     }
 
     @PostMapping("/create")
-    @Secured("ROLE_ADMIN")
+    @Secured("ADMIN")
     public ResponseEntity<?> createGenere (@RequestBody Genere genere) {
         genereService.createGenere(genere);
         return new ResponseEntity<>(genere, HttpStatus.OK);
     }
 
     @PutMapping("/update/{id}")
-    @Secured("ROLE_ADMIN")
+    @Secured("ADMIN")
     public ResponseEntity<?> updateGenere (@PathVariable Long id, @RequestBody Genere genere) {
         try {
             return new ResponseEntity<>(genereService.updateGenere(id, genere), HttpStatus.OK);
@@ -51,7 +51,7 @@ public class GenereController {
     }
 
     @DeleteMapping("/delete/{id}")
-    @Secured("ROLE_ADMIN")
+    @Secured("ADMIN")
     public ResponseEntity<String> deleteGenereById(@PathVariable Long id) {
         try {
             genereService.deleteGenereById(id);

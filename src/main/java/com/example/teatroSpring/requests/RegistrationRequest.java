@@ -17,6 +17,7 @@ public class RegistrationRequest {
     private String email;
     private String telefono;
     private LocalDate dataNascita;
+    private Long città;
     private String password;
 
 }

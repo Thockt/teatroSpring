@@ -37,14 +37,14 @@ public class SedeController {
     }
 
     @PostMapping("/create")
-    @Secured("ROLE_ADMIN")
+    @Secured("ADMIN")
     public ResponseEntity<?> createSede (@RequestBody SedeRequest sedeRequest) throws ComuneNotFoundException {
         sedeService.createSede(sedeRequest);
         return new ResponseEntity<>(sedeRequest, HttpStatus.OK);
     }
 
     @PutMapping("/update/{id}")
-    @Secured("ROLE_ADMIN")
+    @Secured("ADMIN")
     public ResponseEntity<?> updateSede (@PathVariable Long id, @RequestBody Sede sede) {
         try {
             return new ResponseEntity<>(sedeService.updateSede(id, sede), HttpStatus.OK);

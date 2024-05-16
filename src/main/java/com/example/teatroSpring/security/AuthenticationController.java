@@ -1,5 +1,6 @@
 package com.example.teatroSpring.security;
 
+import com.example.teatroSpring.exceptions.ComuneNotFoundException;
 import com.example.teatroSpring.exceptions.UserNotConfirmedException;
 import com.example.teatroSpring.requests.AuthenticationRequest;
 import com.example.teatroSpring.requests.RegistrationRequest;
@@ -21,7 +22,7 @@ public class AuthenticationController {
     private AuthenticationService authenticationService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register (@RequestBody RegistrationRequest request){
+    public ResponseEntity<AuthenticationResponse> register (@RequestBody RegistrationRequest request) throws ComuneNotFoundException {
         return ResponseEntity.ok(authenticationService.register(request));
     }
 
