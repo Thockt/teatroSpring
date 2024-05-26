@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ErmesNewsService implements Job {
+public class ErmesNewsService  {
 
     @Autowired
     private ErmesNewsRepository ermesNewsRepository;
@@ -33,38 +33,8 @@ public class ErmesNewsService implements Job {
         return ermesNews;
     }
 
-    public ScheduledErmesNewsRequest createScheduledErmesNews (ScheduledErmesNewsRequest request) throws SchedulerException {
-        ErmesNews ermesNews = ErmesNews.builder().title(request.getTitle()).body(request.getBody()).build();
-        JobDetail jobDetail = buildJobDetail(ermesNews);
-        Trigger trigger = buildJobTrigger(jobDetail, request.getTargetDate());
-        scheduler.scheduleJob(jobDetail, trigger);
-        return request;
-    }
 
-    private JobDetail buildJobDetail (ErmesNews ermesNews) {
-        JobDataMap jobDataMap = new JobDataMap();
-        jobDataMap.put("entity", ermesNews);
-        return JobBuilder.newJob(ErmesNewsService.class)
-                .withIdentity("ermesNews")
-                .storeDurably()
-                .setJobData(jobDataMap)
-                .build();
-    }
 
-    private Trigger buildJobTrigger (JobDetail jobDetail, Date targetDate) {
-        return TriggerBuilder.newTrigger()
-                .forJob(jobDetail)
-                .startAt(targetDate)
-                .withSchedule(SimpleScheduleBuilder.simpleSchedule())
-                .build();
-    }
 
-    @Override
-    public void execute (JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
-        ErmesNews ermesNews = (ErmesNews) jobDataMap.get("entity");
-        createErmesNews(ermesNews);
-        System.out.println("News inserita con successo!");
-    }
 
 }

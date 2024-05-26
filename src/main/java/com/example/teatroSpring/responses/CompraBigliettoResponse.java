@@ -6,6 +6,8 @@ import com.example.teatroSpring.entities.Utente;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -15,9 +17,9 @@ import java.sql.Timestamp;
 public class CompraBigliettoResponse {
 
     private Long id;
-    private Utente propietario;
-    private Posto posto;
-    private Spettacolo spettacolo;
-    private Timestamp timestamp;
+    private Long propietario;
+    private Long posto;
+    private Long spettacolo;
+    private LocalDateTime timestamp;
 
 }

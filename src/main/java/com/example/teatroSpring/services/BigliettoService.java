@@ -80,6 +80,8 @@ public class BigliettoService {
         return true;
     }
 
+    public List<Long> getIdProprietari (Long idSpettacolo){ return bigliettoRepository.bigliettiSpettacoloDaUtenti(idSpettacolo); }
+
     private Biglietto convertFromDTO (BigliettoRequest bigliettoRequest) throws UtenteNotFoundException, SpettacoloNotFoundException {
         return  Biglietto.builder()
                 .proprietario(utenteRepository.findById(bigliettoRequest.getProprietario()).get())

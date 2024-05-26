@@ -2,9 +2,16 @@ package com.example.teatroSpring.controllers;
 
 import com.example.teatroSpring.entities.Utente;
 import com.example.teatroSpring.exceptions.*;
+import com.example.teatroSpring.requests.BigliettoRequest;
+import com.example.teatroSpring.requests.LikeRequest;
 import com.example.teatroSpring.requests.RecensioneRequest;
+import com.example.teatroSpring.responses.CompraBigliettoResponse;
+import com.example.teatroSpring.responses.GenericResponse;
+import com.example.teatroSpring.responses.LikesLasciatiDaUtenteResponse;
 import com.example.teatroSpring.responses.RecensioneResponse;
 import com.example.teatroSpring.services.BigliettoService;
+import com.example.teatroSpring.services.CommentoNewsService;
+import com.example.teatroSpring.services.LikeService;
 import com.example.teatroSpring.services.UtenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +29,10 @@ public class UtenteController {
     private UtenteService utenteService;
     @Autowired
     private BigliettoService bigliettoService;
+    @Autowired
+    private LikeService likeService;
+    @Autowired
+    private CommentoNewsService commentoNewsService;
 
     @GetMapping("/get/{id}")
     @Secured("USER")
@@ -66,11 +77,36 @@ public class UtenteController {
         }
     }
 
+    @PostMapping("/compraBiglietto")
+    @Secured("USER")
+    public ResponseEntity<?> compraBigietto (@RequestBody BigliettoRequest request) throws UtenteNotFoundException, SpettacoloNotFoundException {
+        return new ResponseEntity<>(bigliettoService.createBiglietto(request), HttpStatus.CREATED);
+    }
+
    @PostMapping("/scriviRecensione")
    @Secured("USER")
     public ResponseEntity<?> scrviRecensione (@RequestBody RecensioneRequest recensioneRequest) throws BigliettoNotFoundException, UtenteNotFoundException, SpettacoloNotFoundException, TrunksHaUsatoLaMacchinaDelTempoException, BigliettoFasulloException {
             RecensioneResponse recensioneResponse = utenteService.scriviRecensione(recensioneRequest);
             return new ResponseEntity<>(recensioneResponse, HttpStatus.OK);
+   }
+
+   @PostMapping("/addLike")
+   @Secured("USER")
+   public ResponseEntity<?> lasciaMiPiace (@RequestBody LikeRequest request) throws ErmesNewsNotFoundException, UtenteNotFoundException, NewsAlreadyLikedException {
+        if (!likeService.isLiked(request)) throw new NewsAlreadyLikedException();
+        return new ResponseEntity<>(likeService.createLike(request), HttpStatus.CREATED);
+   }
+
+   @DeleteMapping("/unlike/{id}")
+   @Secured("USER")
+   public ResponseEntity<GenericResponse> rimuoviLike (@PathVariable Long id) throws LikeNotFoundException {
+        likeService.deleteLikeById(id);
+        return new ResponseEntity<>(new GenericResponse("Mi piace rimosso con successo"), HttpStatus.OK);
+   }
+
+   @GetMapping("miPiaceLasciati/{id}")
+   public ResponseEntity<LikesLasciatiDaUtenteResponse> getUtenteLikes (@PathVariable Long id) {
+        return new ResponseEntity<>(likeService.getQuantiLikeLasciati(id), HttpStatus.OK);
    }
 
    @PostMapping("/update/role")

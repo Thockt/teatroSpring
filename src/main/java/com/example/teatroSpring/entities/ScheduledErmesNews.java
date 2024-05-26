@@ -3,16 +3,16 @@ package com.example.teatroSpring.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Set;
+import java.util.Date;
 
 @Entity
 @Table
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class ErmesNews {
+public class ScheduledErmesNews {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,5 +21,7 @@ public class ErmesNews {
     private String title;
     @Column
     private String body;
+    @Column
+    private Date publishTime;
 
 }

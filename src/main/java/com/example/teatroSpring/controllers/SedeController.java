@@ -3,14 +3,17 @@ package com.example.teatroSpring.controllers;
 import com.example.teatroSpring.entities.Sede;
 import com.example.teatroSpring.exceptions.ComuneNotFoundException;
 import com.example.teatroSpring.exceptions.SedeNotFoundException;
+import com.example.teatroSpring.requests.SedeNuovaApertaRequest;
 import com.example.teatroSpring.requests.SedeRequest;
 import com.example.teatroSpring.services.SedeService;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -43,6 +46,13 @@ public class SedeController {
         return new ResponseEntity<>(sedeRequest, HttpStatus.OK);
     }
 
+    @PostMapping("/newsSede")
+    @Secured("ADMIN")
+    public ResponseEntity<?> createNewsSede (@RequestBody SedeNuovaApertaRequest sedeRequest) throws SchedulerException, ComuneNotFoundException {
+        sedeService.createSedeAndNews(sedeRequest);
+        return new ResponseEntity<>(sedeRequest, HttpStatus.CREATED);
+    }
+
     @PutMapping("/update/{id}")
     @Secured("ADMIN")
     public ResponseEntity<?> updateSede (@PathVariable Long id, @RequestBody Sede sede) {
@@ -55,7 +65,7 @@ public class SedeController {
     }
 
     @DeleteMapping("/delete/{id}")
-    @Secured("ROLE_ADMIN")
+    @Secured("ADMIN")
     public ResponseEntity<String> deleteSedeById (@PathVariable Long id) {
         try {
             sedeService.deleteSedeById(id);

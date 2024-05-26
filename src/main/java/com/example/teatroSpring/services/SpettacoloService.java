@@ -7,6 +7,7 @@ import com.example.teatroSpring.entities.Utente;
 import com.example.teatroSpring.exceptions.ComuneNotFoundException;
 import com.example.teatroSpring.exceptions.GenereNonEsisteException;
 import com.example.teatroSpring.exceptions.SpettacoloNotFoundException;
+import com.example.teatroSpring.repositories.BigliettoRepository;
 import com.example.teatroSpring.repositories.SpettacoloRepository;
 import com.example.teatroSpring.repositories.UtenteRepository;
 import com.example.teatroSpring.requests.SpettacoloRequest;
@@ -36,6 +37,8 @@ public class SpettacoloService {
     private GenereService genereService;
     @Autowired
     private SalaService salaService;
+    @Autowired
+    private BigliettoRepository bigliettoRepository;
     @Autowired
     private ComuneService comuneService;
     @Autowired
@@ -78,7 +81,17 @@ public class SpettacoloService {
         return convertFromEntity(spettacolo);
     }
 
-    public void deleteSpettacoloById (Long id) { spettacoloRepository.deleteById(id); }
+    public void deleteSpettacoloById (Long id) {
+        List<Long> idUtenti = bigliettoRepository.bigliettiSpettacoloDaUtenti(id);
+        idUtenti.forEach(u-> {
+            try {
+                spettacoloCancellatoEmail(utenteRepository.getReferenceById(u), getSpettacoloById(id));
+            } catch (SpettacoloNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        spettacoloRepository.deleteById(id);
+    }
 
     public List<Spettacolo> getSpettacoliByGenere (Long id_genere) throws GenereNonEsisteException {
         genereService.getGenereById(id_genere);
@@ -99,6 +112,7 @@ public class SpettacoloService {
         return spettacoloRepository.getSpettacoliByIntervalloDate(data1, data2);
     }
 
+
     public SimpleMailMessage createNewSpettacoloMail (Utente u, Spettacolo s) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(u.getEmail());
@@ -106,6 +120,15 @@ public class SpettacoloService {
         message.setText("Un nuovo spettacolo verrà eseguito nella città da te specificata! \n Titolo: " +s.getNome()+ " in data: " +s.getOrario()+
                 " di genere: " +s.getGenere().getNome()+ " al prezzo di: " +s.getPrezzo()+"!");
         return message;
+    }
+
+    public void spettacoloCancellatoEmail (Utente u, Spettacolo s) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(u.getEmail());
+        message.setSubject("SPETTACOLO CANCELLATO");
+        message.setText("Caro utente vi informiamo che lo spettacolo "+s.getNome()+
+                " è stato cancellato. Vi invitiamo a riprovare più tardy, grazie!");
+        javaMailSender.send(message);
     }
 
     private Spettacolo convertFromDTO (SpettacoloRequest spettacoloRequest) throws GenereNonEsisteException{

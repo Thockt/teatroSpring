@@ -5,11 +5,14 @@ import com.example.teatroSpring.entities.Utente;
 import com.example.teatroSpring.enums.Role;
 import com.example.teatroSpring.exceptions.*;
 import com.example.teatroSpring.repositories.UtenteRepository;
+import com.example.teatroSpring.requests.BigliettoRequest;
 import com.example.teatroSpring.requests.RecensioneRequest;
+import com.example.teatroSpring.responses.CompraBigliettoResponse;
 import com.example.teatroSpring.responses.RecensioneResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,6 +67,16 @@ public class UtenteService {
         if(secondSplit[1].equals("it") || secondSplit[1].equals("com"))
             return true;
         return false;
+    }
+
+    public CompraBigliettoResponse compraBiglietto (BigliettoRequest request) throws UtenteNotFoundException, SpettacoloNotFoundException {
+        bigliettoService.createBiglietto(request);
+        return CompraBigliettoResponse.builder()
+                .propietario(request.getProprietario())
+                .spettacolo(request.getSpettacolo())
+                .posto(request.getPosto())
+                .timestamp(LocalDateTime.now())
+                .build();
     }
 
     public RecensioneResponse scriviRecensione (RecensioneRequest recensioneRequest) throws BigliettoNotFoundException, UtenteNotFoundException, SpettacoloNotFoundException, TrunksHaUsatoLaMacchinaDelTempoException, BigliettoFasulloException {

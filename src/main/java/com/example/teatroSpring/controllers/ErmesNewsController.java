@@ -3,7 +3,9 @@ package com.example.teatroSpring.controllers;
 import com.example.teatroSpring.entities.ErmesNews;
 import com.example.teatroSpring.exceptions.ErmesNewsNotFoundException;
 import com.example.teatroSpring.requests.ScheduledErmesNewsRequest;
+import com.example.teatroSpring.responses.LikesRicevutiSullaNewsResponse;
 import com.example.teatroSpring.services.ErmesNewsService;
+import com.example.teatroSpring.services.LikeService;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,8 @@ public class ErmesNewsController {
 
     @Autowired
     private ErmesNewsService ermesNewsService;
+    @Autowired
+    private LikeService likeService;
 
     @GetMapping("/get/{id}")
     public ResponseEntity<ErmesNews> getErmesNewsById (@RequestParam Long id) throws ErmesNewsNotFoundException {
@@ -32,15 +36,15 @@ public class ErmesNewsController {
     }
 
     @PostMapping("/create")
-    @Secured("SUPERADMIN, ADMIN")
+    @Secured("ADMIN")
     public ResponseEntity<ErmesNews> createNews (@RequestBody ErmesNews ermesNews) {
         return new ResponseEntity<>(ermesNewsService.createErmesNews(ermesNews), HttpStatus.CREATED);
     }
 
-    @PostMapping("/schedule")
-    @Secured("SUPERADMIN, ADMIN")
-    public ResponseEntity<ScheduledErmesNewsRequest> createScheduledNews (@RequestBody ScheduledErmesNewsRequest request) throws SchedulerException {
-        return new ResponseEntity<>(ermesNewsService.createScheduledErmesNews(request), HttpStatus.CREATED);
+    @Secured("ADMIN")
+    @GetMapping("/likesRicevuti/{id}")
+    public ResponseEntity<LikesRicevutiSullaNewsResponse> getLikesRicevutiSullaNews (@PathVariable Long id) {
+        return new ResponseEntity<>(likeService.getQuantiLikeRicevuti(id), HttpStatus.OK);
     }
 
 }
