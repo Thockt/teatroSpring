@@ -86,6 +86,7 @@ public class AuthenticationService {
                 .utente(utenteRepository.getReferenceById(id))
                 .token(token)
                 .build();
+        int x =0;
         tokenBlackListService.createTokenBlackList(tokenBlackList);
     }
 
