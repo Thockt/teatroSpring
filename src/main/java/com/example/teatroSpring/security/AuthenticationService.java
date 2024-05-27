@@ -94,6 +94,7 @@ public class AuthenticationService {
         if(StringUtils.hasText(authorizationHeader) && authorizationHeader.startsWith("Bearer ")) {
             return authorizationHeader.substring(7);
         }
+        int x=0;
         return null;
     }
 
